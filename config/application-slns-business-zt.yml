@@ -1,0 +1,56 @@
+server:
+  port: 38091
+
+spring:
+  application:
+    name: slns-business
+  
+  tomcat:
+    max-active:30
+    max-wait:1000
+    max-idle:20
+    remove-abandoned-timeout:180
+    
+  datasource:
+    url: jdbc:mysql://10.108.10.55:3306/slns_test_business?rewriteBatchedStatements=true&useUnicode=true&characterEncoding=utf-8
+    username: allways
+    password: 1qaz@WSX_321
+    driver-class-name: com.mysql.jdbc.Driver
+    
+  rabbitmq:
+    host: 10.108.10.54
+    username: allways
+    password: Allways_123
+  sleuth:
+    sampler:
+      percentage: 1
+  zipkin:
+    baseUrl: http://10.108.10.58:9411/
+    
+  redis:
+    database: 0
+    host: 10.108.10.46
+    port: 6379
+    password: Allways_123
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 0
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 6000
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+            defaultZone: http://10.108.10.63:38761/eureka/
+            
+endpoints:
+  shutdown:
+    enabled: true
+  restart:
+    enabled: true
