@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status=debug 可以查看log4j的装配过程 -->
+<configuration status="off" monitorInterval="300">
+	<properties>
+		<property name="LOG_HOME">./logs</property>
+		<!-- 日志备份目录 -->
+		<property name="BACKUP_HOME">{LOG_HOME}/backup</property>
+		<property name="SERVER_NAME">sys_user</property>
+	</properties>
+
+	<appenders>
+		<!-- 定义控制台输出 -->
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS}^^^%level^^^[%thread][%file:%line]^^^%msg%n" />
+		</Console>
+
+		<!-- 程序员调试日志 -->
+		<RollingRandomAccessFile name="DevLog"
+			fileName="${LOG_HOME}/${SERVER_NAME}.log" filePattern="${LOG_HOME}/${SERVER_NAME}.%d{yyyy-MM-dd}.log">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS}^^^%level^^^[%thread][%file:%line]^^^%msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingRandomAccessFile>
+	</appenders>
+	<loggers>
+		<!-- 3rdparty Loggers -->
+		<logger name="org.springframework" level="info">
+		</logger>
+		<logger name="org.apache.http" level="warn">
+		</logger>
+		<logger name="com.alibaba.dubbo" level="warn">
+		</logger>
+		<logger name="org.apache.zookeeper" level="warn">
+		</logger>
+		<logger name="org.I0Itec.zkclient" level="warn">
+		</logger>
+		<logger name="org.apache.commons" level="warn">
+		</logger>
+		<logger name="org.springframework.amqp" level="warn">
+		</logger>
+		<logger name="net.sf.json" level="warn">
+		</logger>
+		<!-- Root Logger -->
+		<root level="all">
+			<appender-ref ref="DevLog" />
+			<appender-ref ref="Console" />
+		</root>
+	</loggers>
+</configuration>

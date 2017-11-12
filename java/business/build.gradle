@@ -1,0 +1,23 @@
+configurations { 
+	all*.exclude module : 'spring-boot-starter-logging' 
+    mybatisGenerate
+}
+
+dependencies {
+	compile project(':allways-base')
+	compile 'org.springframework.boot:spring-boot-starter-test:1.5.1.RELEASE'
+	testCompile 'junit:junit:4.12' 
+	runtime('org.slf4j:slf4j-simple:1.7.21')
+	compile('org.springframework.boot:spring-boot-starter-redis')
+	mybatisGenerate 'org.mybatis.generator:mybatis-generator-core:1.3.5'
+    mybatisGenerate 'mysql:mysql-connector-java:5.1.38'
+    mybatisGenerate 'tk.mybatis:mapper:3.4.0'
+    compile('org.springframework.cloud:spring-cloud-starter-feign')
+    compile('org.springframework.cloud:spring-cloud-starter-ribbon')
+	
+}
+
+test.enabled=false
+
+
+

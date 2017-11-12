@@ -1,0 +1,224 @@
+/**
+ * anji-allways.com Inc.
+ * Copyright (c) 2016-2017 All Rights Reserved.
+ */
+package com.anji.allways.business.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.anji.allways.business.entity.TransportCompanyEntity;
+import com.anji.allways.business.enums.RowDictCodeE;
+import com.anji.allways.business.mapper.TransportCompanyEntityMapper;
+import com.anji.allways.business.service.DictService;
+import com.anji.allways.business.service.TransportCompanyService;
+import com.anji.allways.business.vo.DictVO;
+import com.anji.allways.business.vo.TransportCompanyVO;
+
+/**
+ * @author xuyuyang
+ * @version $Id: BerthServiceImpl.java, v 0.1 2017年8月24日 上午10:52:29 xuyuyang Exp $
+ */
+@Service
+@Transactional
+public class TransportCompanyServiceImpl implements TransportCompanyService {
+
+    @Autowired
+    private TransportCompanyEntityMapper transportCompanyEntityMapper;
+
+    // 获取数据字典Service
+    @Autowired
+    private DictService                  dictService;
+
+    /**
+     * 分页查询
+     * @param bean
+     * @param pageNum
+     * @param pageRows
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryTransportCompanyInfos(TransportCompanyEntity bean, Integer pageNum, Integer pageRows) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        // 查询总件数
+        Integer num = transportCompanyEntityMapper.queryCompanyInfosCount(bean);
+        // 分页查询
+        List<TransportCompanyVO> companyList = this.fingPageInfo(bean, pageNum, pageRows, num);
+
+        // 获取运输公司状态数据字典
+        Map<String, String> retValue = dictService.queryAllByCode(RowDictCodeE.COMPANY_STATUS.getValue());
+        if (companyList.size() > 0) {
+
+            String statusName = "";
+            for (int i = 0; i < companyList.size(); i++) {
+                TransportCompanyVO vo = companyList.get(i);
+                // 设置公司状态名称
+                statusName = retValue.get(String.valueOf(vo.getStatus()));
+                vo.setStatusName(statusName);
+            }
+        }
+        map.put("total", num);
+        map.put("rows", companyList);
+        return map;
+
+    }
+
+    /**
+     * 批量激活或停用公司
+     * @param ids
+     *            选中记录的IDlist
+     * @param userId
+     *            操作用户
+     * @param status
+     *            要更新成的状态(0:停用 1:正常)
+     */
+    @Override
+    public Integer batchUpdateCompany(String ids, Long userId, Integer status) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        String[] split = ids.split(",");
+        List<Long> list = new ArrayList<Long>();
+        for (int i = 0; i < split.length; i++) {
+            list.add(Long.valueOf(split[i]));
+        }
+
+        // 选中记录的IDlist
+        map.put("idList", list);
+        // 操作用户
+        map.put("userId", userId);
+        // 要更新的状态
+        map.put("status", status);
+        return transportCompanyEntityMapper.updateByIdList(map);
+    }
+
+    /**
+     * 新增运输公司信息
+     * @param transportCompanyEntityMapper
+     */
+    @Override
+    public int addTransportCompanyEntity(TransportCompanyEntity transportCompanyEntity) {
+        // 状态（0：停用 1：正常）新增的时候默认状态为正常
+        transportCompanyEntity.setStatus(1);
+        // 创建时间
+        transportCompanyEntity.setCreateTime(new Date());
+        return transportCompanyEntityMapper.insertSelective(transportCompanyEntity);
+    }
+
+    /**
+     * 保存编辑后的运输公司信息
+     * @param transportCompanyEntityMapper
+     */
+    @Override
+    public int updateTransportCompanyEntity(TransportCompanyEntity transportCompanyEntity) {
+        // 更新时间
+        transportCompanyEntity.setUpdateTime(new Date());
+        return transportCompanyEntityMapper.updateByIDForEditCompany(transportCompanyEntity);
+    }
+
+    /**
+     * 校验字段值是否重复
+     * @param value
+     *            字段值
+     * @param cloumnsName
+     *            字段名
+     * @return
+     */
+    @Override
+    public Integer checkRepeatValue(String value, String cloumnsName, Integer id) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        // 要查询的字段
+        map.put(cloumnsName, value);
+        // ID(排除自身)
+        map.put("id", id);
+        int selectCountByExample = transportCompanyEntityMapper.checkRepeatValue(map);
+        return selectCountByExample;
+    }
+
+    /**
+     * 根据ID获取运输公司信息
+     * @return
+     */
+    @Override
+    public TransportCompanyVO selectByPrimaryKey(Integer id) {
+        TransportCompanyVO retValue = transportCompanyEntityMapper.selectByPrimaryKey(id);
+        return retValue;
+    }
+
+    /**
+     * 获取运输公司信息下拉列表
+     */
+    @Override
+    public List<DictVO> queryCompanyForDict(Map<String, Object> map) {
+        return transportCompanyEntityMapper.queryCompanyForDict(map);
+    }
+
+    /**
+     * This method was generated by MyBatis Generator. This method corresponds to the database table tb_transport_company
+     * @mbggenerated Wed Aug 23 17:12:20 CST 2017
+     * @return 返回插入记录后的ID
+     */
+    @Override
+    public Integer insert(TransportCompanyEntity record) {
+        transportCompanyEntityMapper.insert(record);
+        // 返回插入记录后的ID
+        return record.getId();
+    }
+
+    /**
+     * 分页查询功能
+     * @param pageNum
+     *            当前页数
+     * @param pageRows
+     *            每页显示数量
+     * @param num
+     *            查询总件数
+     * @return
+     */
+    private List<TransportCompanyVO> fingPageInfo(TransportCompanyEntity bean, Integer pageNum, Integer pageRows, Integer num) {
+
+        if (num > 0) {
+
+            // 每页显示数量
+            bean.setPageNumber(pageRows);
+            // 总数量
+            bean.setTotalNumber(num);
+            // 当前页数
+            bean.setCurrentPage(pageNum);
+
+            // 查询分页信息
+            List<TransportCompanyVO> list = transportCompanyEntityMapper.queryCompanyInfos(bean);
+            return list;
+        }
+        return new ArrayList<TransportCompanyVO>();
+    }
+
+    /**
+     * check所选运输公司下司机是否已经全部停用
+     * @param ID
+     *            运输公司ID
+     * @return 运输公司名称列表
+     */
+    public List<String> checkCompanyAllDriver(String ids) {
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        String[] split = ids.split(",");
+        List<Long> list = new ArrayList<Long>();
+        for (int i = 0; i < split.length; i++) {
+            list.add(Long.valueOf(split[i]));
+        }
+
+        // 选中记录的IDlist
+        map.put("idList", list);
+        return transportCompanyEntityMapper.checkCompanyAllDriver(map);
+    }
+}

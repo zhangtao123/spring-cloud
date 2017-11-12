@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    config:
+      enabled: true
+      label: release
+      uri: http://10.108.10.63:38100
+      name: application-slns-business  
+      profile: dev
+
+
+mapper:
+    mappers:
+        - com.anji.allways.base.mapper.CommonMapper
+    not-empty: false
+    identity: MYSQL 

@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    config:
+      enabled: true
+      label: release
+      uri: http://10.108.10.63:38100
+      name: application-zuul
+      profile: dev
+      
+  aop:
+    proxyTargetClass: true

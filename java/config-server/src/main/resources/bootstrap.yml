@@ -1,0 +1,34 @@
+server:
+  port: 38100
+
+spring:
+  rabbitmq:
+    host: 10.108.10.17
+    username: admin
+    password: admin
+
+  application:
+    name: config-server
+  
+  profiles:
+    active: dev    
+       
+  cloud:
+    config:
+      server:
+        git:
+          uri: http://gitlab.anji-allways.com/slns/slns-config.git
+          searchPaths: dev
+          label: release
+          username: slns_config
+          password: slns_config
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+            defaultZone: http://10.108.10.63:38761/eureka/
