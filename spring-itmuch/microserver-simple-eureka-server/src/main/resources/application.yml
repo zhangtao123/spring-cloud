@@ -1,0 +1,91 @@
+server:
+  port: 38060
+
+spring:
+  application:
+    name: zuul
+  sleuth:
+    sampler:
+      percentage: 1
+  zipkin:
+    baseUrl: http://10.108.10.58:9411/
+
+  rabbitmq:
+    host: 10.108.10.17
+    username: admin
+    password: admin
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+            defaultZone: http://10.108.10.30:38761/eureka/
+
+# Disable Hystrix timeout globally (for all services)
+#hystrix.command.default.execution.timeout.enabled: false
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+#hystrix.command.service-a.execution.timeout.enabled: false
+
+# Disable Hystrix timeout for a single service
+#hystrix.command.<serviceName>.execution.timeout.enabled: false
+
+# Increase the Hystrix timeout to 60s (globally)
+#hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+
+# Increase the Hystrix timeout to 60s (per service)
+#hystrix.command.<serviceName>.execution.isolation.thread.timeoutInMilliseconds: 60000
+
+zuul:
+  routes:
+    sys:
+      path: /sys/**
+      stripPrefix: false
+      serviceId: slns-auth
+    role:
+      path: /role/**
+      stripPrefix: false
+      serviceId: slns-auth
+    auth:
+      path: /auth/**
+      stripPrefix: false
+      serviceId: slns-auth
+    org:
+      path: /org/**
+      stripPrefix: false
+      serviceId: slns-auth
+    user:
+      path: /user/**
+      stripPrefix: false
+      serviceId: slns-auth
+    log:
+      path: /log/**
+      stripPrefix: false
+      serviceId: slns-auth
+    dict:
+      path: /dict/**
+      stripPrefix: false
+      serviceId: slns-auth
+    business:
+      path: /business/**
+      stripPrefix: false
+      serviceId: slns-business
+    business:
+      path: /driver/**
+      stripPrefix: false
+      serviceId: slns-business
+    business:
+      path: /dealer/**
+      stripPrefix: false
+      serviceId: slns-business
+
+endpoints:
+  shutdown:
+    enabled: true
+  restart:
+    enabled: true
+
+timestamp.validate.limit: 180

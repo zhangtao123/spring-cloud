@@ -1,0 +1,13 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: microserver-provider-user
+eureka:
+  client:
+      service-url:
+        defaultZone: http://root:1234567@localhost:8762/eureka/
+
+  instance:
+    prefer-ip-address: true
+
