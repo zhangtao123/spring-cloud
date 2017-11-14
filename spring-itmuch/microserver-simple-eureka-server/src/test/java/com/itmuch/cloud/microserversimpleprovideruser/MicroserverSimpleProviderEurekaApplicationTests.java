@@ -11,6 +11,7 @@ public class MicroserverSimpleProviderEurekaApplicationTests {
 
 	@Test
 	public void contextLoads() {
-	}
+
+    }
 
 }
