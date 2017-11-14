@@ -4,5 +4,5 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-    service-url:
+    service-url: 
       defaultZone: http://localhost:8762/eureka
